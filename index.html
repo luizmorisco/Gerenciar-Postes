@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localizador de Postes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        :root {
+            --primary: #FF7700;
+            --primary-light: #FF9944;
+            --primary-dark: #E66000;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+            --dark-bg: #1a1a1a;
+            --dark-text: #e0e0e0;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        
+        header.dark-theme {
+            background-color: #2a2a2a;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 60px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav li {
+            margin-left: 30px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        body.dark-theme nav a {
+            color: var(--dark-text);
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        
+        .main-content {
+            padding: 40px 0;
+        }
+        
+        .tab-container {
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: var(--white);
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-theme .tabs {
+            background-color: #2a2a2a;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background-color: var(--white);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        body.dark-theme .tab {
+            background-color: #2a2a2a;
+            color: var(--dark-text);
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        
+        .tab-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-theme .tab-content {
+            background-color: #2a2a2a;
+        }
+        
+        .search-container {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-theme .search-container {
+            background-color: #2a2a2a;
+        }
+        
+        .search-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        body.dark-theme label {
+            color: var(--dark-text);
+        }
+        
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: var(--white);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        body.dark-theme input, body.dark-theme select {
+            background-color: #333;
+            border-color: #555;
+            color: var(--dark-text);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .filter-form {
+            display: flex;
+            gap: 10px;
+            flex-grow: 1;
+        }
+        
+        .filter-input {
+            flex-grow: 1;
+        }
+        
+        .add-button {
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .results {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-theme .results {
+            background-color: #2a2a2a;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        body.dark-theme th, body.dark-theme td {
+            border-bottom: 1px solid #555;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        body.dark-theme th {
+            background-color: #3a3a3a;
+        }
+        
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .upload-btn {
+            background-color: var(--primary-light);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        body.dark-theme .no-results {
+            color: #aaa;
+        }
+        
+        .map-container {
+            height: 400px;
+            margin-top: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-container {
+            margin-top: 20px;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        body.dark-theme .upload-container {
+            border-color: #555;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-theme .modal-content {
+            background-color: #2a2a2a;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modal-title {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+        }
+        
+        .theme-toggle {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .search-form, .form-row {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            th, td {
+                padding: 8px;
+                font-size: 14px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+                justify-content: center;
+            }
+            
+            nav li {
+                margin: 0 10px;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <img src="uisa-squarelogo-1635849790207.webp" alt="Logo" class="logo" id="app-logo">
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Pesquisar</a></li>
+                        <li><a href="#">Lista de Postes</a></li>
+                        <li><a href="#">Gerenciar Arquivos</a></li>
+                    </ul>
+                </nav>
+                <button class="theme-toggle" onclick="toggleTheme()">Tema Escuro</button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="openTab('pesquisa')">Pesquisar Poste</button>
+                    <button class="tab" onclick="openTab('lista')">Lista de Postes</button>
+                    <button class="tab" onclick="openTab('arquivos')">Gerenciar Arquivos</button>
+                </div>
+                
+                <div id="pesquisa" class="tab-content">
+                    <h2>Pesquisar Poste por Código ou Localização</h2>
+                    <div class="search-form">
+                        <div class="form-group">
+                            <label for="code">Código do Poste:</label>
+                            <input type="text" id="code" placeholder="Digite o código (ex: P001)">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Localização:</label>
+                            <input type="text" id="location" placeholder="Digite parte da localização">
+                        </div>
+                        <button id="search-btn">Buscar</button>
+                    </div>
+                    
+                    <div class="results" id="search-results" style="display: none;">
+                        <h3>Resultado da Pesquisa</h3>
+                        <div id="result-content"></div>
+                        <div id="map-container" class="map-container"></div>
+                    </div>
+                </div>
+                
+                <div id="lista" class="tab-content" style="display: none;">
+                    <h2>Lista de Postes Cadastrados</h2>
+                    <div class="filter-bar">
+                        <div class="filter-form">
+                            <input type="text" id="list-filter" class="filter-input" placeholder="Filtrar por código, tipo ou localização...">
+                            <select id="type-filter">
+                                <option value="">Todos os tipos</option>
+                                <option value="concreto">Concreto</option>
+                                <option value="madeira">Madeira</option>
+                                <option value="metal">Metal</option>
+                            </select>
+                            <select id="sort-by">
+                                <option value="id">Ordenar por Código</option>
+                                <option value="type">Ordenar por Tipo</option>
+                                <option value="location">Ordenar por Localização</option>
+                            </select>
+                            <button id="filter-btn">Filtrar</button>
+                            <button onclick="exportToCSV()">Exportar CSV</button>
+                        </div>
+                        <button class="add-button" onclick="openAddPostModal()">+ Cadastrar Novo Poste</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Tipo</th>
+                                <th>Localização</th>
+                                <th>Coordenadas</th>
+                                <th>Arquivo CAD</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="posts-list"></tbody>
+                    </table>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+                
+                <div id="arquivos" class="tab-content" style="display: none;">
+                    <h2>Gerenciar Arquivos AutoCAD</h2>
+                    <p>Selecione um poste e faça upload do arquivo AutoCAD correspondente (máx. 10MB).</p>
+                    
+                    <div class="search-form">
+                        <div class="form-group">
+                            <label for="post-select">Selecione o Poste:</label>
+                            <select id="post-select">
+                                <option value="">Selecione um poste</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-container">
+                        <div class="upload-icon">📁</div>
+                        <p>Arraste e solte seu arquivo .DWG aqui ou</p>
+                        <button onclick="document.getElementById('file-upload').click()">Selecionar Arquivo</button>
+                        <input type="file" id="file-upload" class="file-input" accept=".dwg">
+                        <p id="file-name" style="margin-top: 10px;"></p>
+                    </div>
+                    
+                    <button id="upload-btn" style="margin-top: 20px;">Vincular Arquivo</button>
+                    
+                    <div class="results" style="margin-top: 30px;">
+                        <h3>Arquivos Vinculados</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código do Poste</th>
+                                    <th>Nome do Arquivo</th>
+                                    <th>Data de Upload</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="files-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="add-post-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('add-post-modal')">×</span>
+            <h2 class="modal-title" id="modal-title">Cadastrar Novo Poste</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new-post-id">Código do Poste*:</label>
+                    <input type="text" id="new-post-id" placeholder="Ex: P006" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-post-type">Tipo*:</label>
+                    <select id="new-post-type" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="concreto">Concreto</option>
+                        <option value="madeira">Madeira</option>
+                        <option value="metal">Metal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="new-post-location">Localização*:</label>
+                <input type="text" id="new-post-location" placeholder="Endereço completo" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new-post-lat">Latitude*:</label>
+                    <input type="number" id="new-post-lat" step="0.000001" placeholder="Ex: -23.550520" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-post-lng">Longitude*:</label>
+                    <input type="number" id="new-post-lng" step="0.000001" placeholder="Ex: -46.633308" required>
+                </div>
+            </div>
+            <p style="margin-top: 10px; font-size: 0.9em;">Campos marcados com * são obrigatórios</p>
+            <button id="save-post-btn" style="margin-top: 20px; width: 100%;">Salvar Poste</button>
+        </div>
+    </div>
+    
+    <div id="loading" class="loading">Carregando...</div>
+    
+    <script>
+        let posts = JSON.parse(localStorage.getItem('posts')) || [
+            { id: 'P001', type: 'concreto', location: 'Av. Paulista, São Paulo', lat: -23.5617, lng: -46.6543, cadFile: null },
+            { id: 'P002', type: 'madeira', location: 'Rua Augusta, São Paulo', lat: -23.5523, lng: -46.6582, cadFile: 'P002.dwg' },
+            { id: 'P003', type: 'metal', location: 'Av. Brigadeiro Faria Lima, São Paulo', lat: -23.5813, lng: -46.6722, cadFile: null },
+            { id: 'P004', type: 'concreto', location: 'Av. Rebouças, São Paulo', lat: -23.5587, lng: -46.6691, cadFile: 'P004.dwg' },
+            { id: 'P005', type: 'madeira', location: 'Rua Oscar Freire, São Paulo', lat: -23.5631, lng: -46.6709, cadFile: null }
+        ];
+        
+        let files = JSON.parse(localStorage.getItem('files')) || [
+            { postId: 'P002', fileName: 'P002.dwg', uploadDate: '12/03/2025' },
+            { postId: 'P004', fileName: 'P004.dwg', uploadDate: '28/03/2025' }
+        ];
+        
+        const POSTS_PER_PAGE = 10;
+        let currentPage = 1;
+        let editPostId = null;
+        
+        function openTab(tabName) {
+            showLoading();
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
+            }
+            
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).style.display = 'block';
+            
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach((tab, index) => {
+                if (tab.textContent.toLowerCase().includes(tabName.toLowerCase())) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            if (tabName === 'lista') {
+                populatePostsList();
+            } else if (tabName === 'arquivos') {
+                populatePostsSelect();
+                populateFilesList();
+            }
+            hideLoading();
+        }
+        
+        function openAddPostModal(postId = null) {
+            editPostId = postId;
+            const modalTitle = document.getElementById('modal-title');
+            if (postId) {
+                const post = posts.find(p => p.id === postId);
+                modalTitle.textContent = 'Editar Poste';
+                document.getElementById('new-post-id').value = post.id;
+                document.getElementById('new-post-id').disabled = true;
+                document.getElementById('new-post-type').value = post.type;
+                document.getElementById('new-post-location').value = post.location;
+                document.getElementById('new-post-lat').value = post.lat;
+                document.getElementById('new-post-lng').value = post.lng;
+            } else {
+                modalTitle.textContent = 'Cadastrar Novo Poste';
+                document.getElementById('new-post-id').value = '';
+                document.getElementById('new-post-id').disabled = false;
+                document.getElementById('new-post-type').value = '';
+                document.getElementById('new-post-location').value = '';
+                document.getElementById('new-post-lat').value = '';
+                document.getElementById('new-post-lng').value = '';
+            }
+            document.getElementById('add-post-modal').style.display = 'block';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('search-btn').addEventListener('click', searchPost);
+            document.getElementById('file-upload').addEventListener('change', handleFileSelect);
+            document.getElementById('upload-btn').addEventListener('click', uploadFile);
+            document.getElementById('filter-btn').addEventListener('click', filterPosts);
+            document.getElementById('save-post-btn').addEventListener('click', savePost);
+            document.getElementById('sort-by').addEventListener('change', filterPosts);
+            
+            window.onclick = function(event) {
+                if (event.target.className === 'modal') {
+                    event.target.style.display = 'none';
+                }
+            };
+            
+            openTab('pesquisa');
+            loadTheme();
+        });
+        
+        function searchPost() {
+            showLoading();
+            const codeInput = document.getElementById('code').value.trim().toLowerCase();
+            const locationInput = document.getElementById('location').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            const resultContent = document.getElementById('result-content');
+            const mapContainer = document.getElementById('map-container');
+            
+            if (!codeInput && !locationInput) {
+                alert('Por favor, digite um código ou localização');
+                hideLoading();
+                return;
+            }
+            
+            const post = posts.find(p => 
+                (codeInput && p.id.toLowerCase() === codeInput) || 
+                (locationInput && p.location.toLowerCase().includes(locationInput))
+            );
+            
+            if (post) {
+                resultContent.innerHTML = `
+                    <table>
+                        <tr><th>Código:</th><td>${post.id}</td></tr>
+                        <tr><th>Tipo:</th><td>${capitalizeFirstLetter(post.type)}</td></tr>
+                        <tr><th>Localização:</th><td>${post.location}</td></tr>
+                        <tr><th>Coordenadas:</th><td>${post.lat.toFixed(6)}, ${post.lng.toFixed(6)}</td></tr>
+                        <tr><th>Arquivo CAD:</th><td>${post.cadFile ? post.cadFile : 'Não disponível'}</td></tr>
+                        <tr><th>Ações:</th><td>
+                            <a href="https://earth.google.com/web/search/${post.lat},${post.lng}/" class="action-btn" target="_blank">Abrir no Google Earth</a>
+                            ${post.cadFile ? `<a href="#" class="action-btn">Download CAD</a>` : `<a href="#" class="action-btn upload-btn" onclick="openTab('arquivos')">Vincular CAD</a>`}
+                        </td></tr>
+                    </table>
+                `;
+                mapContainer.innerHTML = `
+                    <iframe 
+                        src="https://earth.google.com/web/@${post.lat},${post.lng},1000a,35y,0h,0t,0r" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        allowfullscreen>
+                    </iframe>
+                `;
+                resultsContainer.style.display = 'block';
+            } else {
+                resultContent.innerHTML = `<p class="no-results">Nenhum poste encontrado com o código "${codeInput}" ou localização "${locationInput}".</p>`;
+                mapContainer.innerHTML = '';
+                resultsContainer.style.display = 'block';
+            }
+            hideLoading();
+        }
+        
+        function populatePostsList(filteredPosts = null) {
+            const postsListElement = document.getElementById('posts-list');
+            const paginationElement = document.getElementById('pagination');
+            let postsToShow = filteredPosts || posts;
+            
+            const sortBy = document.getElementById('sort-by').value;
+            postsToShow.sort((a, b) => {
+                if (sortBy === 'id') return a.id.localeCompare(b.id);
+                if (sortBy === 'type') return a.type.localeCompare(b.type);
+                if (sortBy === 'location') return a.location.localeCompare(b.location);
+                return 0;
+            });
+            
+            const totalPages = Math.ceil(postsToShow.length / POSTS_PER_PAGE);
+            const start = (currentPage - 1) * POSTS_PER_PAGE;
+            const end = start + POSTS_PER_PAGE;
+            const paginatedPosts = postsToShow.slice(start, end);
+            
+            postsListElement.innerHTML = '';
+            
+            if (paginatedPosts.length === 0) {
+                postsListElement.innerHTML = `<tr><td colspan="6" class="no-results">Nenhum poste encontrado.</td></tr>`;
+            } else {
+                paginatedPosts.forEach(post => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${post.id}</td>
+                        <td>${capitalizeFirstLetter(post.type)}</td>
+                        <td>${post.location}</td>
+                        <td>${post.lat.toFixed(6)}, ${post.lng.toFixed(6)}</td>
+                        <td>${post.cadFile ? post.cadFile : 'Não disponível'}</td>
+                        <td>
+                            <a href="https://earth.google.com/web/search/${post.lat},${post.lng}/" class="action-btn" target="_blank">Ver no Google Earth</a>
+                            ${post.cadFile ? `<a href="#" class="action-btn">Download CAD</a>` : `<a href="#" class="action-btn upload-btn" onclick="openTab('arquivos')">Vincular CAD</a>`}
+                            <a href="#" class="action-btn" onclick="openAddPostModal('${post.id}')">Editar</a>
+                        </td>
+                    `;
+                    postsListElement.appendChild(row);
+                });
+            }
+            
+            paginationElement.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = i === currentPage ? 'active' : '';
+                btn.onclick = () => {
+                    currentPage = i;
+                    populatePostsList(filteredPosts);
+                };
+                paginationElement.appendChild(btn);
+            }
+        }
+        
+        function filterPosts() {
+            showLoading();
+            const filterText = document.getElementById('list-filter').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value.toLowerCase();
+            
+            let filteredPosts = posts;
+            
+            if (filterText) {
+                filteredPosts = filteredPosts.filter(post => 
+                    post.id.toLowerCase().includes(filterText) || 
+                    post.location.toLowerCase().includes(filterText) ||
+                    post.type.toLowerCase().includes(filterText)
+                );
+            }
+            
+            if (typeFilter) {
+                filteredPosts = filteredPosts.filter(post => post.type.toLowerCase() === typeFilter);
+            }
+            
+            currentPage = 1;
+            populatePostsList(filteredPosts);
+            hideLoading();
+        }
+        
+        function savePost() {
+            showLoading();
+            const newId = document.getElementById('new-post-id').value.trim();
+            const newType = document.getElementById('new-post-type').value;
+            const newLocation = document.getElementById('new-post-location').value.trim();
+            const newLat = parseFloat(document.getElementById('new-post-lat').value);
+            const newLng = parseFloat(document.getElementById('new-post-lng').value);
+            
+            if (!newId || !newType || !newLocation || isNaN(newLat) || isNaN(newLng)) {
+                alert('Por favor, preencha todos os campos obrigatórios corretamente.');
+                hideLoading();
+                return;
+            }
+            
+            if (editPostId) {
+                const index = posts.findIndex(p => p.id === editPostId);
+                posts[index] = { id: newId, type: newType, location: newLocation, lat: newLat, lng: newLng, cadFile: posts[index].cadFile };
+                alert('Poste atualizado com sucesso!');
+            } else {
+                if (posts.some(post => post.id.toLowerCase() === newId.toLowerCase())) {
+                    alert('Este código de poste já existe. Por favor, use um código único.');
+                    hideLoading();
+                    return;
+                }
+                posts.push({ id: newId, type: newType, location: newLocation, lat: newLat, lng: newLng, cadFile: null });
+                alert('Poste cadastrado com sucesso!');
+            }
+            
+            localStorage.setItem('posts', JSON.stringify(posts));
+            openTab('lista');
+            closeModal('add-post-modal');
+            hideLoading();
+        }
+        
+        function populatePostsSelect() {
+            const postSelect = document.getElementById('post-select');
+            postSelect.innerHTML = '<option value="">Selecione um poste</option>';
+            posts.forEach(post => {
+                const option = document.createElement('option');
+                option.value = post.id;
+                option.textContent = `${post.id} - ${post.location}`;
+                postSelect.appendChild(option);
+            });
+        }
+        
+        function populateFilesList() {
+            const filesListElement = document.getElementById('files-list');
+            filesListElement.innerHTML = '';
+            
+            if (files.length === 0) {
+                filesListElement.innerHTML = `<tr><td colspan="4" class="no-results">Nenhum arquivo vinculado.</td></tr>`;
+                return;
+            }
+            
+            files.forEach(file => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${file.postId}</td>
+                    <td>${file.fileName}</td>
+                    <td>${file.uploadDate}</td>
+                    <td>
+                        <a href="#" class="action-btn">Download</a>
+                        <a href="#" class="action-btn" onclick="deleteFile('${file.postId}')">Excluir</a>
+                    </td>
+                `;
+                filesListElement.appendChild(row);
+            });
+        }
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file.size > 10 * 1024 * 1024) {
+                alert('O arquivo excede o limite de 10MB.');
+                event.target.value = '';
+                return;
+            }
+            document.getElementById('file-name').textContent = `Arquivo selecionado: ${file.name}`;
+        }
+        
+        function uploadFile() {
+            showLoading();
+            const selectedPost = document.getElementById('post-select').value;
+            const fileInput = document.getElementById('file-upload');
+            
+            if (!selectedPost) {
+                alert('Por favor, selecione um poste');
+                hideLoading();
+                return;
+            }
+            
+            if (fileInput.files.length === 0) {
+                alert('Por favor, selecione um arquivo');
+                hideLoading();
+                return;
+            }
+            
+            const fileName = fileInput.files[0].name;
+            if (!fileName.endsWith('.dwg')) {
+                alert('Por favor, selecione um arquivo AutoCAD (.dwg)');
+                hideLoading();
+                return;
+            }
+            
+            const today = new Date();
+            const dateString = today.toLocaleDateString();
+            files.push({ postId: selectedPost, fileName: fileName, uploadDate: dateString });
+            
+            const postIndex = posts.findIndex(p => p.id === selectedPost);
+            if (postIndex !== -1) {
+                posts[postIndex].cadFile = fileName;
+            }
+            
+            localStorage.setItem('posts', JSON.stringify(posts));
+            localStorage.setItem('files', JSON.stringify(files));
+            populateFilesList();
+            
+            document.getElementById('post-select').value = '';
+            fileInput.value = '';
+            document.getElementById('file-name').textContent = '';
+            alert('Arquivo vinculado com sucesso!');
+            hideLoading();
+        }
+        
+        function deleteFile(postId) {
+            if (confirm('Tem certeza que deseja excluir este arquivo?')) {
+                files = files.filter(f => f.postId !== postId);
+                const postIndex = posts.findIndex(p => p.id === postId);
+                if (postIndex !== -1) posts[postIndex].cadFile = null;
+                localStorage.setItem('posts', JSON.stringify(posts));
+                localStorage.setItem('files', JSON.stringify(files));
+                populateFilesList();
+            }
+        }
+        
+        function exportToCSV() {
+            const csv = ['Código,Tipo,Localização,Latitude,Longitude,Arquivo CAD'];
+            posts.forEach(post => {
+                csv.push(`${post.id},${post.type},${post.location},${post.lat},${post.lng},${post.cadFile || 'Nenhum'}`);
+            });
+            const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n');
+            const link = document.createElement('a');
+            link.setAttribute('href', encodeURI(csvContent));
+            link.setAttribute('download', 'postes.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        }
+        
+        function loadTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+    </script>
+</body>
+</html>
